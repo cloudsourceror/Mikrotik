@@ -1,0 +1,58 @@
+# Netwerk-C B.V. - Basic & Secure Mikrotik Router Setup
+
+##	Basic security measures
+
+# Replace the default 'admin'-user by 'megavisor' with a strong password
+/user add name=megavisor password=123YourReallyStrongPasswordGoesHere! group=full
+/user disable admin
+
+# Disable unwanted services on production devices
+/tool mac-server set allowed-interface-list=none
+/tool mac-server mac-winbox set allowed-interface-list=none
+/tool mac-server ping set enabled=no
+/tool bandwidth-server set enabled=no
+
+# Disable neighbor discovery
+/ip neighbor discovery-settings set discover-interface-list=none
+
+# Disable remote DNS
+/ip dns set allow-remote-requests=no
+
+# Disable caching proxy, socks, UPnP, and cloud services
+/ip proxy set enabled=no
+/ip socks set enabled=no
+/ip upnp set enabled=no
+/ip cloud set ddns-enabled=no update-time=no
+
+# Set strong crypto on SSH
+/ip ssh set strong-crypto=yes
+
+# Disable the LCD
+/lcd/set enabled=no
+
+# Add a reliable, independent time-server
+/system ntp client set enabled=yes server-dns-names=0.pool.ntp.org,1.pool.ntp.org,2.pool.ntp.org,3.pool.ntp.org
+
+# Add some address lists to use in the firewall-config
+/ip firewall address-list
+  add address=127.0.0.0/8 comment="RFC6890" list=bad_ipv4
+  add address=192.0.0.0/24 comment="RFC6890" list=bad_ipv4
+  add address=192.0.2.0/24 comment="RFC6890 documentation" list=bad_ipv4
+  add address=198.51.100.0/24 comment="RFC6890 documentation" list=bad_ipv4
+  add address=203.0.113.0/24 comment="RFC6890 documentation" list=bad_ipv4
+  add address=240.0.0.0/4 comment="RFC6890 reserved" list=bad_ipv4
+  
+  add address=0.0.0.0/8 comment="RFC6890" list=Private_IP_V4
+  add address=10.0.0.0/8 comment="RFC6890" list=Private_IP_V4
+  add address=100.64.0.0/10 comment="RFC6890" list=Private_IP_V4
+  add address=169.254.0.0/16 comment="RFC6890" list=Private_IP_V4
+  add address=172.16.0.0/12 comment="RFC6890" list=Private_IP_V4
+  add address=192.0.0.0/29 comment="RFC6890" list=Private_IP_V4
+  add address=192.168.0.0/16 comment="RFC6890" list=Private_IP_V4
+  add address=198.18.0.0/15 comment="RFC6890 benchmark" list=Private_IP_V4
+  add address=255.255.255.255/32 comment="RFC6890" list=Private_IP_V4
+  
+  add address=224.0.0.0/4 comment="multicast" list=bad_src_ipv4
+  add address=255.255.255.255/32 comment="RFC6890" list=bad_src_ipv4
+  add address=0.0.0.0/8 comment="RFC6890" list=bad_dst_ipv4
+  add address=224.0.0.0/4 comment="RFC6890" list=bad_dst_ipv4
